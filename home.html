@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Movable Text with Neon Effect</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #left-panel {
+            width: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 2px solid #ddd;
+            position: relative;
+            overflow: hidden;
+            background-image: url('https://as1.ftcdn.net/v2/jpg/02/77/04/92/1000_F_277049210_9rIvQVJ6sD7J1oA2C0GjFAy69WSJRbAQ.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        #right-panel {
+            width: 40%;
+            padding: 20px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #movable-text {
+            position: absolute;
+            font-size: 36px;
+            color: #00ff00; /* Initial text color */
+            cursor: grab;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px #00ff00,
+                         0 0 20px #00ff00,
+                         0 0 30px #00ff00,
+                         0 0 40px #00ff00,
+                         0 0 50px #00ff00,
+                         0 0 60px #00ff00,
+                         0 0 70px #00ff00;
+        }
+
+        #text-input {
+            width: 100%;
+            height: 100px;
+            font-size: 18px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .color-button, .font-button, .glow-button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+
+        .font-button, .glow-button {
+            color: black;
+        }
+
+        .color1 { background-color: #ff0000; } /* Red */
+        .color2 { background-color: #00ff00; } /* Green */
+        .color3 { background-color: #0000ff; } /* Blue */
+        .color4 { background-color: #ffff00; } /* Yellow */
+        .color5 { background-color: #ff00ff; } /* Magenta */
+
+        .font1 { font-family: 'Arial, sans-serif'; }
+        .font2 { font-family: 'Courier New, monospace'; }
+        .font3 { font-family: 'Georgia, serif'; }
+        .font4 { font-family: 'Tahoma, sans-serif'; }
+        .font5 { font-family: 'Verdana, sans-serif'; }
+
+        .glow {
+            text-shadow: 0 0 20px #00ff00,
+                         0 0 40px #00ff00,
+                         0 0 60px #00ff00,
+                         0 0 80px #00ff00,
+                         0 0 100px #00ff00,
+                         0 0 120px #00ff00,
+                         0 0 140px #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="left-panel">
+        <div id="movable-text">Your text will appear here...</div>
+    </div>
+    <div id="right-panel">
+        <textarea id="text-input" placeholder="Type your text here..."></textarea>
+
+        <div class="button-group">
+            <button class="color-button color1" onclick="changeTextColor('#ff0000')">Red</button>
+            <button class="color-button color2" onclick="changeTextColor('#00ff00')">Green</button>
+            <button class="color-button color3" onclick="changeTextColor('#0000ff')">Blue</button>
+            <button class="color-button color4" onclick="changeTextColor('#ffff00')">Yellow</button>
+            <button class="color-button color5" onclick="changeTextColor('#ff00ff')">Magenta</button>
+        </div>
+
+        <div class="button-group">
+            <button class="font-button font1" onclick="changeFontFamily('Arial, sans-serif')">Arial</button>
+            <button class="font-button font2" onclick="changeFontFamily('Courier New, monospace')">Courier</button>
+            <button class="font-button font3" onclick="changeFontFamily('Georgia, serif')">Georgia</button>
+            <button class="font-button font4" onclick="changeFontFamily('Tahoma, sans-serif')">Tahoma</button>
+            <button class="font-button font5" onclick="changeFontFamily('Verdana, sans-serif')">Verdana</button>
+        </div>
+
+        <div class="button-group">
+            <button class="glow-button" onclick="toggleGlow()">Toggle Glow</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const text = document.getElementById('movable-text');
+            const textInput = document.getElementById('text-input');
+            const leftPanel = document.getElementById('left-panel');
+
+            let isDragging = false;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            text.addEventListener('mousedown', (event) => {
+                isDragging = true;
+                offsetX = event.clientX - text.offsetLeft;
+                offsetY = event.clientY - text.offsetTop;
+                text.style.cursor = 'grabbing';
+                event.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                if (isDragging) {
+                    let newLeft = event.clientX - offsetX;
+                    let newTop = event.clientY - offsetY;
+
+                    // Boundary conditions
+                    newLeft = Math.max(0, Math.min(newLeft, leftPanel.clientWidth - text.clientWidth));
+                    newTop = Math.max(0, Math.min(newTop, leftPanel.clientHeight - text.clientHeight));
+
+                    text.style.left = `${newLeft}px`;
+                    text.style.top = `${newTop}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                text.style.cursor = 'grab';
+            });
+
+            // Update text in real-time
+            textInput.addEventListener('input', (event) => {
+                text.innerText = event.target.value;
+            });
+        });
+
+        // Change text color
+        function changeTextColor(color) {
+            const text = document.getElementById('movable-text');
+            text.style.color = color;
+            text.style.textShadow = `
+                0 0 10px ${color},
+                0 0 20px ${color},
+                0 0 30px ${color},
+                0 0 40px ${color},
+                0 0 50px ${color},
+                0 0 60px ${color},
+                0 0 70px ${color}`;
+        }
+
+        // Change font family of the text
+        function changeFontFamily(fontFamily) {
+            const text = document.getElementById('movable-text');
+            text.style.fontFamily = fontFamily;
+        }
+
+        // Toggle glow effect on the text
+        function toggleGlow() {
+            const text = document.getElementById('movable-text');
+            text.classList.toggle('glow');
+        }
+    </script>
+</body>
+</html>
